@@ -1,20 +1,24 @@
-from lib.Barcelona import Barcelona
-from lib.Berlin import Berlin
-from lib.BuenosAires import BuenosAires
-from lib.London import London
-from lib.Madrid import Madrid
-from lib.NewYork import NewYork
-from lib.Paris import Paris
-from lib.SanFrancisco import SanFrancisco
-from lib.Shangai import Shangai
+import os
+import csv
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+from lib.Argentina import Argentina
+from lib.China import China
+from lib.England import England
+from lib.France import France
+from lib.Germany import Germany
+from lib.Italy import Italy
+from lib.Spain import Spain
+from lib.USA import USA
+
+
 
 ATTRIB_LIST = ("Date",
                "Time",
                "Country",
                "Country ISO",
-               "City",
-               "City ISO",
-               "Cases Detected",
+               "Capital",
+               "Capital ISO",
                "Cases",
                "Deaths",
                "Recovered",
@@ -26,18 +30,46 @@ ATTRIB_LIST = ("Date",
                "CO2",
                "SO2")
 
-def init():
-    # Initialize all the classe
-    BCN = Barcelona.Barcelona()
-    BE = Berlin.Berlin()
-    BS = BuenosAires.BuenosAires()
-    LDN = London.London()
-    MD = Madrid.Madrid()
-    NY = NewYork.NewYork()
-    PRS = Paris.Paris()
-    SF = SanFrancisco.SanFrancisco()
-    SGI = Shangai.Shangai()
+CSV_LIST = ("Output")
 
 
-if __name__ == '__main__':
-    init()
+class DatasetGenerator:
+
+    def __init__(self):
+        self.update_dict = {}
+
+        # Initialize all the classe
+        self.ESP = Spain.Spain()
+
+    def update_attributes(self):
+        self.ESP.update_source()
+        self.ESP.update_dataset()
+
+
+def check_csv_exist():
+    # Create an empty file with header
+    for file in CSV_LIST:
+        if not os.path.exists("CSV/{}.csv".format(file)):
+            with open("CSV/{}.CSV".format(file), 'w') as f:
+                writer = csv.writer(f)
+                writer.writerow(ATTRIB_LIST)
+    if not os.path.exists("CSV/Output.csv".format(file)):
+        with open("CSV/Output.csv".format(file), 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(ATTRIB_LIST)
+
+
+def main():
+    print("Running main function")
+    ds = DatasetGenerator()
+    ds.update_attributes()
+
+
+if __name__ == "__main__":
+    print("Running...")
+    check_csv_exist()
+    # Update the files each hour
+    # scheduler = BlockingScheduler()
+    # scheduler.add_job(main, 'interval', hours=1)
+    # scheduler.start()
+    main()
