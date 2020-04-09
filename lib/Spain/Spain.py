@@ -6,11 +6,37 @@ from selenium.webdriver.common.keys import Keys
 from pathlib import Path
 
 
-class Spain:
+import sys
+if '..\\..' not in sys.path:
+    sys.path.append("..\\..")
 
+if 'Assistant' not in sys.modules:
+    import Assistant
+
+
+class Spain:
+    
+    
     def __init__(self):
         self.download_path = str(os.path.join(Path.home(), "Downloads"))
         self.current_path = os.path.abspath("temp")
+        self.casosActivos = None
+        self.casosDiarios = None
+        self.DecesosDiarios = None
+        self.RecuperacionesDiarias = None
+        self.all_data = None
+
+    def get_all_data(self):
+        import Assistant
+        self.casosActivos = Assistant.getCases('Spain','Casos Activos')
+        self.casosDiarios = Assistant.getCases('Spain','Nuevos Casos Diarios')
+        self.DecesosDiarios = Assistant.getCases('Spain','Decesos Diarios')
+        self.RecuperacionesDiarias = Assistant.getCases('Spain','Recuperaciones Diarias')
+        self.all_data = self.casosActivos
+        self.all_data['Nuevos Casos Diarios'] = self.casosDiarios['Nuevos Casos Diarios']
+        self.all_data['Decesos Diarios'] = self.DecesosDiarios['Decesos Diarios']
+        self.all_data['Recuperaciones Diarias'] = self.RecuperacionesDiarias['Recuperaciones Diarias']
+
 
     def update_source(self):
         with webdriver.Chrome() as driver:

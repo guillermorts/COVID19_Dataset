@@ -16,10 +16,30 @@ import pandas as pd
 # historico de datos por día
 #Post: Devuelve un pandas dataframe con los casos activos
 
-def getActiveCases(country):
+def TranslateToGraph(tipo):
+    diccionario = {'Casos Activos' : 'graph-active-cases-total',
+                   'Nuevos Casos Diarios': 'graph-cases-daily',
+                   'Decesos Diarios': 'graph-deaths-daily',
+                   'Recuperaciones Diarias':'cases-cured-daily' }
+    try:
+        return diccionario[tipo]
+    except:
+        return ''
+    
+    
+
+
+def getCases(country,tipo):
+    
+    TipoGrafo = TranslateToGraph(tipo)
+    #Comprobamos que el tipo de búsqueda es correcto
+    if (TipoGrafo == ''):
+        print("Error en tipo")
+        return None
+    
     
     page = requests.get("https://www.worldometers.info/coronavirus/country/" + country + "/")
-    print()
+    
     #Comprobamos que la página web es correcta
     if (page.status_code != 200) :
         print ("URL no encontrada")
@@ -32,7 +52,7 @@ def getActiveCases(country):
     
     # Buscamos entre los textos encontrados el que contenga los casos activos:
     for i in scripts:  
-        if (i.contents[0].find('graph-active-cases-total') != -1):
+        if (i.contents[0].find(TipoGrafo) != -1):
             chart = str(i.contents[0])
             break
     
@@ -56,11 +76,9 @@ def getActiveCases(country):
     #Creamos la variable con las columna del país
     countryCol = [country]*len(days)
     
-    d = {'Country' : countryCol, 'Fecha': days, 'Casos Activos':data}
+    d = {'Country' : countryCol, 'Fecha': days, tipo:data}
     
     df = pd.DataFrame(data = d)
     
     return df
-    
-    
     
