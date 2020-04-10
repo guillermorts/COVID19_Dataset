@@ -27,7 +27,7 @@ class USA:
         self.all_data = self.casosActivos
         self.all_data['Daily New Cases'] = self.casosDiarios['Daily New Cases']
         self.all_data['Daily New Deaths'] = self.DecesosDiarios['Daily New Deaths']
-        self.all_data['Recuperaciones Diarias'] = 'null'
+        self.all_data['Newly Recovered'] = 'null'
         self.all_data['PM2.5'] = self.pollution.extract_data('PM2.5', self.dates)
         self.all_data['PM10'] = self.pollution.extract_data('PM10', self.dates)
         self.all_data['O3'] = self.pollution.extract_data('O3', self.dates)
