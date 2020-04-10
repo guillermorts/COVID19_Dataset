@@ -49,12 +49,26 @@ MONT_DICT_2 = {"01": "Jan",
 
 
 def TranslateToGraph(tipo):
-    diccionario = {'Casos Activos': 'graph-active-cases-total',
-                   'Nuevos Casos Diarios': 'graph-cases-daily',
-                   'Decesos Diarios': 'graph-deaths-daily',
-                   'Recuperaciones Diarias': 'cases-cured-daily'}
+    diccionario = {'Active Cases': 'graph-active-cases-total',
+                   'Daily New Cases': 'graph-cases-daily',
+                   'Daily New Deaths': 'graph-deaths-daily',
+                   'Newly Recovered': 'cases-cured-daily'}
     try:
         return diccionario[tipo]
+    except:
+        return ''
+    
+def GetCity(country):
+    diccionario = {'Argentina': 'Buenos Aires',
+                   'Spain': 'Madrid',
+                   'US': 'New York',
+                   'China': 'Beijing',
+                   'Germany': 'Berlin',
+                   'Italy': 'Rome',
+                   'UK': 'London',
+                   'France': 'Paris'}
+    try:
+        return diccionario[country]
     except:
         return ''
 
@@ -107,9 +121,9 @@ def getCases(country, tipo):
         days.append(date_fix)
 
     # Creamos la variable con las columna del país
-    countryCol = [country] * len(days)
+    city = GetCity(country)
 
-    d = {'Country': countryCol, 'Date': days, tipo: data}
+    d = {'Country': country, 'City': city, 'Date': days, tipo: data}
 
     df = pd.DataFrame(data=d)
 

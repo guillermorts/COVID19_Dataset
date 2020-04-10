@@ -19,16 +19,17 @@ class Argentina:
         self.all_data = None
         self.pollution = Assistant.Pollution("buenos-aires")
         
-    def get_all_data(self):    
-        self.casosActivos = Assistant.getCases('Argentina','Casos Activos')
-        self.casosDiarios = Assistant.getCases('Argentina','Nuevos Casos Diarios')
-        self.DecesosDiarios = Assistant.getCases('Argentina','Decesos Diarios')
-        self.RecuperacionesDiarias = Assistant.getCases('Argentina','Recuperaciones Diarias')
+    def get_all_data(self):
+        import Assistant
+        self.casosActivos = Assistant.getCases('Argentina','Active Cases')
+        self.casosDiarios = Assistant.getCases('Argentina','Daily New Cases')
+        self.DecesosDiarios = Assistant.getCases('Argentina','Daily New Deaths')
+        self.RecuperacionesDiarias = Assistant.getCases('Argentina','Newly Recovered')
         self.dates = self.casosActivos['Date']
         self.all_data = self.casosActivos
-        self.all_data['Nuevos Casos Diarios'] = self.casosDiarios['Nuevos Casos Diarios']
-        self.all_data['Decesos Diarios'] = self.DecesosDiarios['Decesos Diarios']
-        self.all_data['Recuperaciones Diarias'] = self.RecuperacionesDiarias['Recuperaciones Diarias']
+        self.all_data['Daily New Cases'] = self.casosDiarios['Daily New Cases']
+        self.all_data['Daily New Deaths'] = self.DecesosDiarios['Daily New Deaths']
+        self.all_data['Newly Recovered'] = self.RecuperacionesDiarias['Newly Recovered']
         self.all_data['PM2.5'] = self.pollution.extract_data('PM2.5', self.dates)
         self.all_data['PM10'] = self.pollution.extract_data('PM10', self.dates)
         self.all_data['O3'] = self.pollution.extract_data('O3', self.dates)

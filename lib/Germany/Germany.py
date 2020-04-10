@@ -6,6 +6,7 @@ if '..\\..' not in sys.path:
     sys.path.append("..\\..")
 if 'Assistant' not in sys.modules:
     import Assistant
+    
 import pandas as pd
 
 class Germany:
@@ -20,15 +21,15 @@ class Germany:
         
     def get_all_data(self):
         import Assistant
-        self.casosActivos = Assistant.getCases('Germany','Casos Activos')
-        self.casosDiarios = Assistant.getCases('Germany','Nuevos Casos Diarios')
-        self.DecesosDiarios = Assistant.getCases('Germany','Decesos Diarios')
-        self.RecuperacionesDiarias = Assistant.getCases('Germany','Recuperaciones Diarias')
+        self.casosActivos = Assistant.getCases('Germany','Active Cases')
+        self.casosDiarios = Assistant.getCases('Germany','Daily New Cases')
+        self.DecesosDiarios = Assistant.getCases('Germany','Daily New Deaths')
+        self.RecuperacionesDiarias = Assistant.getCases('Germany','Newly Recovered')
         self.dates = self.casosActivos['Date']
         self.all_data = self.casosActivos
-        self.all_data['Nuevos Casos Diarios'] = self.casosDiarios['Nuevos Casos Diarios']
-        self.all_data['Decesos Diarios'] = self.DecesosDiarios['Decesos Diarios']
-        self.all_data['Recuperaciones Diarias'] = self.RecuperacionesDiarias['Recuperaciones Diarias']
+        self.all_data['Daily New Cases'] = self.casosDiarios['Daily New Cases']
+        self.all_data['Daily New Deaths'] = self.DecesosDiarios['Daily New Deaths']
+        self.all_data['Newly Recovered'] = self.RecuperacionesDiarias['Newly Recovered']
         self.all_data['PM2.5'] = self.pollution.extract_data('PM2.5', self.dates)
         self.all_data['PM10'] = self.pollution.extract_data('PM10', self.dates)
         self.all_data['O3'] = self.pollution.extract_data('O3', self.dates)

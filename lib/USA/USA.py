@@ -19,15 +19,15 @@ class USA:
         
     def get_all_data(self):   
         import Assistant
-        self.casosActivos = Assistant.getCases('US','Casos Activos')
-        self.casosDiarios = Assistant.getCases('US','Nuevos Casos Diarios')
-        self.DecesosDiarios = Assistant.getCases('US','Decesos Diarios')
-        self.RecuperacionesDiarias = None
+        self.casosActivos = Assistant.getCases('US','Active Cases')
+        self.casosDiarios = Assistant.getCases('US','Daily New Cases')
+        self.DecesosDiarios = Assistant.getCases('US','Daily New Deaths')
+        self.RecuperacionesDiarias = 'null'
         self.dates = self.casosActivos['Date']
         self.all_data = self.casosActivos
-        self.all_data['Nuevos Casos Diarios'] = self.casosDiarios['Nuevos Casos Diarios']
-        self.all_data['Decesos Diarios'] = self.DecesosDiarios['Decesos Diarios']
-        self.all_data['Recuperaciones Diarias'] = None
+        self.all_data['Daily New Cases'] = self.casosDiarios['Daily New Cases']
+        self.all_data['Daily New Deaths'] = self.DecesosDiarios['Daily New Deaths']
+        self.all_data['Recuperaciones Diarias'] = 'null'
         self.all_data['PM2.5'] = self.pollution.extract_data('PM2.5', self.dates)
         self.all_data['PM10'] = self.pollution.extract_data('PM10', self.dates)
         self.all_data['O3'] = self.pollution.extract_data('O3', self.dates)
