@@ -5,86 +5,115 @@ Created on Sun Apr  5 23:06:28 2020
 @author: nbafu
 """
 
+import pandas as pd
+import re
 import requests
 import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
-import re
-import pandas as pd
 
-#Creador de asistente para llamar funciones repetitivas desde la clase Pais
+# Creador de asistente para llamar funciones repetitivas desde la clase Pais
 
-#Pre: country es el nombre del pais en ingles del que se quiere extraer el
+# Pre: country es el nombre del pais en ingles del que se quiere extraer el
 # historico de datos por día
-#Post: Devuelve un pandas dataframe con los casos activos
+# Post: Devuelve un pandas dataframe con los casos activos
+
+MONT_DICT_1 = {"Jan": "01",
+               "Feb": "02",
+               "Mar": "03",
+               "Apr": "04",
+               "May": "05",
+               "Jun": "06",
+               "Jul": "07",
+               "Aug": "08",
+               "Sep": "09",
+               "Oct": "10",
+               "Nov": "11",
+               "Dec": "12"
+               }
+
+MONT_DICT_2 = {"01": "Jan",
+               "02": "Feb",
+               "03": "Mar",
+               "04": "Apr",
+               "05": "May",
+               "06": "Jun",
+               "07": "Jul",
+               "08": "Aug",
+               "09": "Sep",
+               "10": "Oct",
+               "11": "Nov",
+               "12": "Dec"
+               }
+
 
 def TranslateToGraph(tipo):
-    diccionario = {'Casos Activos' : 'graph-active-cases-total',
+    diccionario = {'Casos Activos': 'graph-active-cases-total',
                    'Nuevos Casos Diarios': 'graph-cases-daily',
                    'Decesos Diarios': 'graph-deaths-daily',
-                   'Recuperaciones Diarias':'cases-cured-daily' }
+                   'Recuperaciones Diarias': 'cases-cured-daily'}
     try:
         return diccionario[tipo]
     except:
         return ''
-    
-    
 
 
-def getCases(country,tipo):
-    
+def getCases(country, tipo):
     TipoGrafo = TranslateToGraph(tipo)
-    #Comprobamos que el tipo de búsqueda es correcto
+    # Comprobamos que el tipo de búsqueda es correcto
     if (TipoGrafo == ''):
         print("Error en tipo")
         return None
-    
-    
+
     page = requests.get("https://www.worldometers.info/coronavirus/country/" + country + "/")
-    
-    #Comprobamos que la página web es correcta
-    if (page.status_code != 200) :
+
+    # Comprobamos que la página web es correcta
+    if (page.status_code != 200):
         print ("URL no encontrada")
         return None
-    #Generamos el beautifulSoup
+    # Generamos el beautifulSoup
     soup = BeautifulSoup(page.content, "html.parser")
-    
-    #Buscamos aquellas etiquetas que tengan como atributo los indicados
-    scripts = soup.find_all(attrs={'type':'text/javascript','class':'','src':''})
-    
+
+    # Buscamos aquellas etiquetas que tengan como atributo los indicados
+    scripts = soup.find_all(attrs={'type': 'text/javascript', 'class': '', 'src': ''})
+
     # Buscamos entre los textos encontrados el que contenga los casos activos:
-    for i in scripts:  
+    for i in scripts:
         if (i.contents[0].find(TipoGrafo) != -1):
             chart = str(i.contents[0])
             break
-    
-    #Buscamos el patrón "data: \[.*?\]" que contiene los datos numéricos
-    verifyData= re.compile(r"data: \[.*?\]",re.M)
+
+    # Buscamos el patrón "data: \[.*?\]" que contiene los datos numéricos
+    verifyData = re.compile(r"data: \[.*?\]", re.M)
     m = verifyData.search(chart)
-    
-    #Obtenemos los datos y los transformamos en list
+
+    # Obtenemos los datos y los transformamos en list
     predata1 = m.group()
-    predata2 = predata1[(int(predata1.find('['))+1):(int(predata1.find(']')))]
+    predata2 = predata1[(int(predata1.find('[')) + 1):(int(predata1.find(']')))]
     data = predata2.split(",")
-    
-    #realizamos el mismo proceso para los días registrados:
-    verifyCateg= re.compile(r"categories: \[.*?\]",re.M)
-    
+
+    # realizamos el mismo proceso para los días registrados:
+    verifyCateg = re.compile(r"categories: \[.*?\]", re.M)
+
     m = verifyCateg.search(chart)
     predays1 = m.group()
-    predays2 = predays1[(int(predays1.find('['))+1):(int(predays1.find(']')))]
-    days = predays2.split(",")
-    
-    #Creamos la variable con las columna del país
-    countryCol = [country]*len(days)
-    
-    d = {'Country' : countryCol, 'Fecha': days, tipo:data}
-    
-    df = pd.DataFrame(data = d)
-    
-    return df
+    predays2 = predays1[(int(predays1.find('[')) + 1):(int(predays1.find(']')))]
+    # Fix in the date to standaraize it
+    days = []
+    for day in predays2.split(","):
+        day = day.replace('"', '')
+        date_fix = str(day.split(" ")[1]) + "-" + str(MONT_DICT_1[day.split(" ")[0]]) + "-2020"
+        days.append(date_fix)
 
+    # Creamos la variable con las columna del país
+    countryCol = [country] * len(days)
+
+    d = {'Country': countryCol, 'Date': days, tipo: data}
+
+    df = pd.DataFrame(data=d)
+
+    return df
 
 
 class Pollution:
@@ -134,22 +163,34 @@ class Pollution:
                 month_name = cols[0].text
                 if display == "none":
                     data_dict[year].update({month_name: {}})
-                    for n_day in range(1, 31):
-                        data_dict[year][month_name].update({n_day: None})
+                    for n_day in range(1, 32):
+                        data_dict[year][month_name].update({str(n_day): None})
                 else:
                     data_dict[year].update({month_name: {}})
                     days_frame = cols[3].find("svg")
                     days = days_frame.findAll("text")
                     for n, day in enumerate(days):
                         if day.text == "-":
-                            data_dict[year][month_name].update({str(n+1): None})
+                            data_dict[year][month_name].update({str(n + 1): None})
                         else:
-                            data_dict[year][month_name].update({str(n+1): day.text})
+                            data_dict[year][month_name].update({str(n + 1): day.text})
         return data_dict
 
-
-
-
-
-
-
+    def extract_data(self, magnitude, dates):
+        try:
+            assert magnitude in self.magnitude_list
+        except AssertionError:
+            AssertionError(
+                f"The magnitude {magnitude} is not valid"
+            )
+        magnitude_res = []
+        for date in dates:
+            if not self.data_dict[magnitude]:
+                magnitude_res.append(None)
+            else:
+                date_split = date.split("-")
+                day = date_split[0].lstrip("0")
+                month = date_split[1]
+                year = date_split[2]
+                magnitude_res.append(self.data_dict[magnitude][year][MONT_DICT_2[month]][day])
+        return magnitude_res

@@ -26,12 +26,22 @@ ATTRIB_LIST = ("Date",
                "Deaths",
                "Recovered",
                "Average Temperature",
+               "PM2.5",
+               "PM10",
                "O3",
-               "NOx",
                "NO2",
-               "NO",
-               "CO2",
-               "SO2")
+               "SO2",
+               "CO")
+
+COUNTRY_DICT = {"Argentina": "Buenos Aires",
+                "China": "Beijing",
+                "England": "London",
+                "France": "Paris",
+                "Germany": "Berlin",
+                "Italy": "Rome",
+                "Spain": "Madrid",
+                "United States of America": "NewYork"
+                }
 
 CSV_LIST = ("Output")
 
@@ -82,11 +92,6 @@ class DatasetGenerator:
         else:
             print("Datos no cargados")
         return 0
-            
-
-    def update_attributes(self):
-        self.ESP.update_source()
-        self.ESP.update_dataset()
 
 
 def check_csv_exist():
@@ -107,14 +112,9 @@ def main():
     ds = DatasetGenerator()
     ds.get_data()
     ds.print_to_csv()
-    #ds.update_attributes()
 
 
 if __name__ == "__main__":
     print("Running...")
     check_csv_exist()
-    # Update the files each hour
-    # scheduler = BlockingScheduler()
-    # scheduler.add_job(main, 'interval', hours=1)
-    # scheduler.start()
     main()
