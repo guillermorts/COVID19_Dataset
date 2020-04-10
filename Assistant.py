@@ -6,7 +6,10 @@ Created on Sun Apr  5 23:06:28 2020
 """
 
 import requests
+import time
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 import re
 import pandas as pd
 
@@ -81,4 +84,72 @@ def getCases(country,tipo):
     df = pd.DataFrame(data = d)
     
     return df
-    
+
+
+
+class Pollution:
+
+    def __init__(self, city="madrid"):
+        self.magnitude_list = ["PM2.5",
+                               "PM10",
+                               "O3",
+                               "NO2",
+                               "SO2",
+                               "CO"
+                               ]
+        self.url = 'https://aqicn.org/city/'
+        self.driver = webdriver.Chrome()
+        self.actions = ActionChains(self.driver)
+        self.driver.get(self.url + city + '/')
+        time.sleep(3)
+        historic_data = self.driver.find_element_by_id("historic-aqidata-block")
+        self.actions.move_to_element(historic_data).perform()
+        time.sleep(6)
+        magnitude_buttons = historic_data.find_elements_by_tag_name("li")
+        self.data_dict = {}
+        for buttons in magnitude_buttons:
+            buttons.click()
+            time.sleep(.5)
+            table = historic_data.find_element_by_tag_name("table")
+            table_code = table.get_attribute('innerHTML')
+            data = self.process_table(table_code)
+            self.data_dict.update({buttons.text: data})
+        self.driver.close()
+        for magnitude in self.magnitude_list:
+            if not magnitude in self.data_dict.keys():
+                self.data_dict.update({magnitude: None})
+
+    def process_table(self, table_code):
+        soup = BeautifulSoup(table_code, "html.parser")
+        rows = soup.findAll("tr")
+        data_dict = {}
+        for row in rows:
+            year = row['key'][:4]
+            month = row['key'][4:]
+            if month == "12":
+                data_dict.update({year: {}})
+            else:
+                display = row['style'].replace("display: ", "").replace(";", "")
+                cols = row.findAll("td")
+                month_name = cols[0].text
+                if display == "none":
+                    data_dict[year].update({month_name: {}})
+                    for n_day in range(1, 31):
+                        data_dict[year][month_name].update({n_day: None})
+                else:
+                    data_dict[year].update({month_name: {}})
+                    days_frame = cols[3].find("svg")
+                    days = days_frame.findAll("text")
+                    for n, day in enumerate(days):
+                        if day.text == "-":
+                            data_dict[year][month_name].update({str(n+1): None})
+                        else:
+                            data_dict[year][month_name].update({str(n+1): day.text})
+        return data_dict
+
+
+
+
+
+
+
