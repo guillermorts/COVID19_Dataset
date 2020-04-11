@@ -4,9 +4,11 @@
 
 This practice has been done under the context of the subject _Tipología y ciclo de vida de los datos_, that belongs to the Master degree of Data Science from _Universitat Oberta de Catalunya_. In this practice, is applied the web scraping technique using Python programming language to extract data from the webs _https://www.worldometers.info/_ y  _https://aqicn.org/_ to generate a dataset.
 
-## Team members
+## Authors
 
-This activity has been done by **Nicola Bafundi** and **Guillermo Orts"".
+This activity has been done as a team project developed by:
+* **Nicola Bafundi** - [PurpleBooth](https://github.com/nico152)
+* **Guillermo Orts** - [PurpleBooth](https://github.com/guillermorts)
 
 ## Source code files
 
