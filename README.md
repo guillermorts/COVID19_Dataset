@@ -7,8 +7,8 @@ This practice has been done under the context of the subject _Tipología y ciclo
 ## Authors
 
 This activity has been done as a team project developed by:
-* **Nicola Bafundi** - [PurpleBooth](https://github.com/nico152)
-* **Guillermo Orts** - [PurpleBooth](https://github.com/guillermorts)
+* **Nicola Bafundi** - [Nico 152](https://github.com/nico152)
+* **Guillermo Orts** - [guillermorts](https://github.com/guillermorts)
 
 ## Source code files
 
