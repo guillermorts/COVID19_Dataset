@@ -1,6 +1,8 @@
+
 import os
 import csv
 from apscheduler.schedulers.blocking import BlockingScheduler
+import pandas as pd
 
 
 from lib.Argentina import Argentina
@@ -12,38 +14,7 @@ from lib.Italy import Italy
 from lib.Spain import Spain
 from lib.USA import USA
 
-import pandas as pd
-
 import Assistant
-
-ATTRIB_LIST = ("Date",
-               "Time",
-               "Country",
-               "Country ISO",
-               "Capital",
-               "Capital ISO",
-               "Cases",
-               "Deaths",
-               "Recovered",
-               "Average Temperature",
-               "PM2.5",
-               "PM10",
-               "O3",
-               "NO2",
-               "SO2",
-               "CO")
-
-COUNTRY_DICT = {"Argentina": "Buenos Aires",
-                "China": "Beijing",
-                "England": "London",
-                "France": "Paris",
-                "Germany": "Berlin",
-                "Italy": "Rome",
-                "Spain": "Madrid",
-                "United States of America": "NewYork"
-                }
-
-CSV_LIST = ("Output")
 
 
 class DatasetGenerator:
@@ -87,24 +58,11 @@ class DatasetGenerator:
         
     def print_to_csv(self):
         if (self.ALL is not None):
-            self.ALL.to_csv("output.csv")
+            self.ALL.to_csv("CSV/COVID19_Pollution_Dataset.csv")
             print("CSV Exported")
         else:
             print("Datos no cargados")
         return 0
-
-
-def check_csv_exist():
-    # Create an empty file with header
-    for file in CSV_LIST:
-        if not os.path.exists("CSV/{}.csv".format(file)):
-            with open("CSV/{}.csv".format(file), 'w') as f:
-                writer = csv.writer(f)
-                writer.writerow(ATTRIB_LIST)
-    if not os.path.exists("CSV/Output.csv".format(file)):
-        with open("CSV/Output.csv".format(file), 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(ATTRIB_LIST)
 
 
 def main():
@@ -116,5 +74,4 @@ def main():
 
 if __name__ == "__main__":
     print("Running...")
-    check_csv_exist()
     main()

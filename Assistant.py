@@ -200,11 +200,14 @@ class Pollution:
         magnitude_res = []
         for date in dates:
             if not self.data_dict[magnitude]:
-                magnitude_res.append(None)
+                magnitude_res.append("null")
             else:
                 date_split = date.split("-")
                 day = date_split[0].lstrip("0")
                 month = date_split[1]
                 year = date_split[2]
-                magnitude_res.append(self.data_dict[magnitude][year][MONT_DICT_2[month]][day])
+                if not self.data_dict[magnitude][year][MONT_DICT_2[month]][day]:
+                    magnitude_res.append("null")
+                else:
+                    magnitude_res.append(self.data_dict[magnitude][year][MONT_DICT_2[month]][day])
         return magnitude_res
